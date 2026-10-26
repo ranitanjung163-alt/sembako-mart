@@ -36,5 +36,5 @@ Ikuti langkah berikut untuk menjalankan proyek ini di lingkungan lokal (*clean e
 
 1. **Clone Repository**
    ```bash
-   git clone [https://github.com/ranitanjung163-alt/sembako-mart.git](https://github.com/ranitanjung163-alt/sembako-mart.git)
+   git clone https://github.com/ranitanjung163-alt/sembako-mart.git
    cd sembako-martart
