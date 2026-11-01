@@ -33,6 +33,7 @@
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Invoice</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kasir / Staff</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Daftar Barang Belanjaan</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Belanja</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bayar</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kembalian</th>
@@ -45,6 +46,14 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-emerald-600">{{ $sale->invoice_number }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $sale->user->name ?? '-' }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-700">
+                                        @foreach($sale->items as $item)
+                                            <div class="text-xs font-medium text-gray-800">
+                                                • {{ $item->product->name ?? 'Produk' }} 
+                                                <span class="text-emerald-600 font-bold">({{ $item->quantity }}x)</span>
+                                            </div>
+                                        @endforeach
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">Rp {{ number_format($sale->total_amount, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp {{ number_format($sale->paid_amount, 0, ',', '.') }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp {{ number_format($sale->change_amount, 0, ',', '.') }}</td>
@@ -55,7 +64,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada riwayat transaksi penjualan.</td>
+                                    <td colspan="8" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada riwayat transaksi penjualan.</td>
                                 </tr>
                             @endforelse
                         </tbody>

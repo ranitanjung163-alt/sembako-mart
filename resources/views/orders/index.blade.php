@@ -7,11 +7,16 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            
-            <!-- Tombol Kembali ke Dashboard -->
+
+            <!-- Tombol Navigasi: Kembali ke Dashboard & Keranjang Belanja -->
             <div class="flex justify-between items-center">
-                <a href="{{ route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-xl text-sm transition inline-flex items-center gap-2">
+                <a href="{{ route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-xl text-sm transition inline-flex items-center">
                     &larr; Kembali ke Dashboard
+                </a>
+
+                <!-- Tombol Pintasan Keranjang Belanja untuk User -->
+                <a href="{{ route('cart.index') }}" class="bg-amber-500 hover:bg-amber-600 text-white font-medium px-4 py-2 rounded-xl text-sm shadow transition inline-flex items-center gap-2">
+                    🛒 Keranjang Belanja
                 </a>
             </div>
 
@@ -30,7 +35,7 @@
             <!-- Tabel Daftar Pesanan -->
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl border border-emerald-100 p-6">
                 <h3 class="font-bold text-gray-800 text-lg mb-4">📦 {{ auth()->user()->role === 'user' ? 'Riwayat Pesanan Saya' : 'Daftar Pesanan Masuk' }}</h3>
-
+                
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
@@ -51,7 +56,6 @@
                             @forelse($orders as $order)
                                 <tr class="hover:bg-gray-50 transition">
                                     <td class="py-3 px-4 font-mono font-bold text-emerald-600">{{ $order->invoice_number }}</td>
-                                    <!-- Kolom Nama Pemesan kini selalu tampil untuk semua role -->
                                     <td class="py-3 px-4 font-semibold text-gray-800">{{ $order->customer_name ?? '-' }}</td>
                                     <td class="py-3 px-4 font-mono text-gray-600">{{ $order->phone ?? '-' }}</td>
                                     <td class="py-3 px-4">
@@ -59,8 +63,8 @@
                                             <div>{{ $item->product->name ?? 'Produk' }} (<strong>x{{ $item->quantity }}</strong>)</div>
                                         @endforeach
                                     </td>
-                                    <td class="py-3 px-4 font-extrabold text-emerald-700">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
-                                    <td class="py-3 px-4 text-xs text-gray-500">{{ $order->shipping_address }}</td>
+                                    <td class="py-3 px-4 font-extrabold text-emerald-700">Rp {{ number_format($order->total_price ?? $order->total_amount, 0, ',', '.') }}</td>
+                                    <td class="py-3 px-4 text-xs text-gray-500">{{ $order->shipping_address ?? '-' }}</td>
                                     <td class="py-3 px-4">
                                         @php
                                             $statusColors = [
@@ -85,21 +89,21 @@
                                                     <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Completed</option>
                                                     <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                                                 </select>
-                                                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg shadow">Ubah</button>
+                                                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg shadow transition">Update</button>
                                             </form>
                                         </td>
                                     @endif
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="{{ auth()->user()->role !== 'user' ? '8' : '7' }}" class="text-center py-6 text-gray-400 italic">Belum ada riwayat pemesanan.</td>
+                                    <td colspan="{{ auth()->user()->role !== 'user' ? '8' : '7' }}" class="text-center py-8 text-gray-400 italic">Belum ada riwayat pemesanan.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
 </x-app-layout>

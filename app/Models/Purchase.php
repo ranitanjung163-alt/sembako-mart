@@ -18,7 +18,14 @@ class Purchase extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Relasi asli
     public function items()
+    {
+        return $this->hasMany(PurchaseItem::class);
+    }
+
+    // Alias relasi agar kompatibel dengan Controller (purchaseItems)
+    public function purchaseItems()
     {
         return $this->hasMany(PurchaseItem::class);
     }

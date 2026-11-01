@@ -6,72 +6,65 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            <div class="flex justify-between items-center">
-                <a href="{{ route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-xl text-sm transition">&larr; Kembali ke Dashboard</a>
-                <a href="{{ route('products.create') }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm shadow transition">+ Tambah Produk Baru</a>
-            </div>
+            @if(session('success'))
+                <div class="mb-4 bg-emerald-100 border border-emerald-400 text-emerald-700 px-4 py-3 rounded-xl relative shadow-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
 
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl border border-emerald-100 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg">Daftar Katalog Produk Sembako</h3>
+                        <p class="text-xs text-gray-500">Kelola inventori, harga, dan stok barang dagangan.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="{{ route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-xl text-xs transition">
+                            ← Kembali ke Dashboard
+                        </a>
+                        <a href="{{ route('products.create') }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl text-xs shadow transition">
+                            + Tambah Produk Baru
+                        </a>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
                             <tr class="border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                <th class="py-3 px-4">No</th>
-                                <th class="py-3 px-4">Foto</th>
-                                <th class="py-3 px-4">Kode SKU</th>
-                                <th class="py-3 px-4">Nama Produk</th>
-                                <th class="py-3 px-4">Kategori</th>
-                                <th class="py-3 px-4">Harga (Rp)</th>
-                                <th class="py-3 px-4">Stok</th>
-                                <th class="py-3 px-4 text-center">Aksi</th>
+                                <th class="py-3 px-4 text-left">No</th>
+                                <th class="py-3 px-4 text-left">Kode SKU</th>
+                                <th class="py-3 px-4 text-left">Nama Produk</th>
+                                <th class="py-3 px-4 text-left">Kategori</th>
+                                <th class="py-3 px-4 text-center">Stok</th>
+                                <th class="py-3 px-4 text-left">Harga</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
-                            @forelse($products as $index => $product)
-                                <tr class="hover:bg-gray-50 transition">
+                            @forelse($products as $index => $prod)
+                                <tr class="hover:bg-emerald-50/50 transition">
                                     <td class="py-3 px-4">{{ $index + 1 }}</td>
-                                    <td class="py-3 px-4">
-                                        @if($product->image)
-                                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-12 h-12 object-cover rounded-xl shadow-sm">
-                                        @else
-                                            <span class="text-xs text-gray-400 italic">Tanpa Foto</span>
-                                        @endif
-                                    </td>
-                                    <td class="py-3 px-4 font-mono font-medium text-emerald-600">{{ $product->sku }}</td>
-                                    <td class="py-3 px-4 font-semibold text-gray-800">{{ $product->name }}</td>
+                                    <td class="py-3 px-4 font-mono text-gray-500">{{ $prod->sku }}</td>
+                                    <td class="py-3 px-4 font-semibold text-gray-800">{{ $prod->name }}</td>
                                     <td class="py-3 px-4">
                                         <span class="bg-emerald-50 text-emerald-700 text-xs font-medium px-2.5 py-1 rounded-md">
-                                            {{ $product->category->name ?? '-' }}
+                                            {{ $prod->category->name ?? 'Umum' }}
                                         </span>
                                     </td>
-                                    <td class="py-3 px-4 font-medium">
-                                        @php
-                                            $pPrice = $product->selling_price ?? $product->price ?? $product->harga ?? $product->harga_jual ?? 0;
-                                        @endphp
-                                        Rp {{ number_format($pPrice, 0, ',', '.') }}
-                                    </td>
-                                    <td class="py-3 px-4 font-bold text-emerald-600">{{ $product->stock }} pcs</td>
-                                    <td class="py-3 px-4 text-center space-x-2">
-                                        <a href="{{ route('products.edit', $product->id) }}" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow transition">Edit</a>
-                                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow transition">Hapus</button>
-                                        </form>
-                                    </td>
+                                    <td class="py-3 px-4 text-center font-bold text-emerald-600">{{ $prod->stock }} pcs</td>
+                                    <td class="py-3 px-4 font-extrabold text-gray-900">Rp {{ number_format($prod->selling_price ?? $prod->price ?? 0, 0, ',', '.') }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center py-6 text-gray-500 italic">Belum ada data produk sembako.</td>
+                                    <td colspan="6" class="text-center py-10 text-gray-400 italic">Belum ada produk yang terdaftar.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

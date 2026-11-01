@@ -63,11 +63,11 @@ class SaleController extends Controller
                     } else {
                         $unitPrice = 10000; // Harga default pengaman
                     }
-                    
-                    // Perhitungan subtotal (operator perkalian sudah diperbaiki)
+
                     $subtotal = $unitPrice * $item['quantity'];
                     $totalAmount += $subtotal;
 
+                    // PERBAIKAN UTAMA: Gunakan [] agar semua item tertampung (multi-item)
                     $saleItemsData[] = [
                         'product_id' => $product->id,
                         'quantity'   => $item['quantity'],
@@ -84,19 +84,18 @@ class SaleController extends Controller
                     throw new \Exception("Uang yang dibayarkan kurang dari total belanja (Rp " . number_format($totalAmount, 0, ',', '.') . ").");
                 }
 
-                // Perhitungan kembalian (operator pengurangan sudah diperbaiki)
                 $changeAmount = $request->paid_amount - $totalAmount;
 
                 // Simpan Header Penjualan
                 $sale = Sale::create([
-                    'user_id'        => auth()->id(),
-                    'invoice_number' => 'INV-' . strtoupper(Str::random(8)),
-                    'total_amount'   => $totalAmount,
-                    'paid_amount'    => $request->paid_amount,
-                    'change_amount'  => $changeAmount,
+                    'user_id'       => auth()->id(),
+                    'invoice_number'=> 'INV-' . strtoupper(Str::random(8)),
+                    'total_amount'  => $totalAmount,
+                    'paid_amount'   => $request->paid_amount,
+                    'change_amount' => $changeAmount,
                 ]);
 
-                // Simpan Detail Item Penjualan
+                // Simpan Seluruh Detail Item Penjualan
                 foreach ($saleItemsData as $data) {
                     $sale->items()->create($data);
                 }

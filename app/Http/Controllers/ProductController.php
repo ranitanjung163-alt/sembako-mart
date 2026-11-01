@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,7 +25,10 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('products.create', compact('categories'));
+        $suppliers = Supplier::all();
+        $products = Product::all(); // Ditambahkan agar view tidak error Undefined variable $products
+
+        return view('products.create', compact('categories', 'suppliers', 'products'));
     }
 
     /**
@@ -68,7 +72,10 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
-        return view('products.edit', compact('product', 'categories'));
+        $suppliers = Supplier::all();
+        $products = Product::all();
+
+        return view('products.edit', compact('product', 'categories', 'suppliers', 'products'));
     }
 
     /**
@@ -88,7 +95,6 @@ class ProductController extends Controller
 
         $imagePath = $product->image;
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
             if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }

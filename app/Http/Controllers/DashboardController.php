@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\SaleItem;
-use Illuminate\Http\Request;
+use App\Models\PurchaseItem;
+use App\Models\OrderItem; // Model Item Pesanan User
 
 class DashboardController extends Controller
 {
@@ -13,27 +14,27 @@ class DashboardController extends Controller
     {
         $totalProducts = Product::count();
         $totalCategories = Category::count();
+        $totalStockIn = PurchaseItem::sum('quantity');
         
-        // Barang Masuk: Menghitung total keseluruhan akumulasi stok produk yang ada
-        $totalStockIn = Product::sum('stock'); 
+        // Barang Keluar HANYA dihitung dari total kuantitas pesanan online user yang statusnya 'completed'
+        $totalStockout = OrderItem::whereHas('order', function($query) {
+            $query->where('status', 'completed');
+        })->sum('quantity');
         
-        // Barang Keluar: Menghitung total kuantitas produk yang terjual secara real-time dari tabel penjualan
-        $totalStockOut = SaleItem::sum('quantity'); 
+        $lowStockCount = Product::where('stock', '<=', 5)->count();
         
-        // Produk dengan stok rendah (<= 5)
-        $lowStockProducts = Product::where('stock', '<=', 5)->get();
-        $lowStockCount = $lowStockProducts->count();
+        // Mengambil daftar produk yang stoknya menipis (<= 5)
+        $lowStockItems = Product::with('category')->where('stock', '<=', 5)->get();
 
-        // Mengambil semua daftar produk beserta relasi kategorinya untuk ditampilkan di dashboard
         $products = Product::with('category')->latest()->get();
 
         return view('dashboard', compact(
-            'totalProducts',
-            'totalCategories',
-            'totalStockIn',
-            'totalStockOut',
-            'lowStockCount',
-            'lowStockProducts',
+            'totalProducts', 
+            'totalCategories', 
+            'totalStockIn', 
+            'totalStockout', 
+            'lowStockCount', 
+            'lowStockItems',
             'products'
         ));
     }
